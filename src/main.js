@@ -78,6 +78,7 @@ async function showImages() {
 searchForm.addEventListener('submit', event => {
   event.preventDefault();
   resetPage();
+  hidden(loadMore);
   searchValue = search.value.trim();
   page = 1;
   showImages();
