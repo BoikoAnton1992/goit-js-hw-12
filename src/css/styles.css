@@ -17,6 +17,7 @@ body {
 }
 
 .container {
+  width: 1440px;
   padding-left: 15px;
   padding-right: 15px;
 }
@@ -216,11 +217,6 @@ button:focus {
   gap: 8px;
 }
 
-.container{
-  width: 1440px;
-}
-
-
 .loader {
   display: flex;
   justify-content: center;
@@ -258,4 +254,9 @@ button:focus {
   clip-path: inset(100%);
   clip: rect(0 0 0 0);
   overflow: hidden;
+}
+
+.load-more{
+  margin-left: auto;
+  margin-right: auto;
 }
