@@ -13,15 +13,16 @@ const searchForm = document.querySelector('.input-container');
 const loadMore = document.querySelector('.load-more');
 const gallery = document.querySelector('.gallery');
 
+const perPage = 15;
 let page;
 let searchValue;
 
-function showLoader() {
-  loader.classList.remove('is-hidden');
+function show(selector) {
+  selector.classList.remove('is-hidden');
 }
 
-function hideLoader() {
-  loader.classList.add('is-hidden');
+function hidden(selector) {
+  selector.classList.add('is-hidden');
 }
 
 function resetPage() {
@@ -29,7 +30,8 @@ function resetPage() {
 }
 
 function showError() {
-  hideLoader();
+  hidden(loadMore);
+  hidden(loader);
   return iziToast.error({
     message:
       'Sorry, there are no images matching <br>your search query. Please try again!',
@@ -51,13 +53,26 @@ function initializeLightbox() {
   lightbox.refresh();
 }
 
+function scroll() {
+  const galleryItem = document.querySelector('.gallery-item');
+  if (page === 1) return;
+  const rect = galleryItem.getBoundingClientRect();
+  window.scrollBy({ behavior: 'smooth', top: (rect.height + 24) * 2 });
+}
+
 async function showImages() {
-  showLoader();
-  const data = await getImagesFromServer(searchValue, page);
-  if (data.length < 1) return showError();
-  createGalleryMarkup(data);
+  show(loader);
+  const data = await getImagesFromServer(searchValue, page, perPage);
+  if (data.hits.length < 1) return showError();
+  createGalleryMarkup(data.hits);
   initializeLightbox();
-  hideLoader();
+  hidden(loader);
+  if (page * perPage < data.totalHits) show(loadMore);
+  else {
+    hidden(loadMore);
+    showError();
+  }
+  scroll();
 }
 
 searchForm.addEventListener('submit', event => {
@@ -65,7 +80,7 @@ searchForm.addEventListener('submit', event => {
   resetPage();
   searchValue = search.value.trim();
   page = 1;
-  showImages(searchValue);
+  showImages();
 });
 
 loadMore.addEventListener('click', () => {
