@@ -1,11 +1,16 @@
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
 import 'izitoast/dist/css/iziToast.min.css';
 import './css/styles.css';
 import getImagesFromServer from './js/pixabay-api';
 import createGalleryMarkup from './js/render-functions';
 import iziToast from 'izitoast';
 import cross from './img/cross.png';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
+
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 const search = document.querySelector('.search');
 const loader = document.querySelector('.loader');
@@ -44,15 +49,6 @@ function showError() {
     close: false,
   });
 }
-
-function initializeLightbox() {
-  const lightbox = new SimpleLightbox('.gallery a', {
-    captionsData: 'alt',
-    captionDelay: 250,
-  });
-  lightbox.refresh();
-}
-
 function scroll() {
   const galleryItem = document.querySelector('.gallery-item');
   if (page === 1) return;
@@ -61,11 +57,17 @@ function scroll() {
 }
 
 async function showImages() {
+  if (searchValue.trim() === '') {
+    showError();
+    return;
+  }
+
   show(loader);
   const data = await getImagesFromServer(searchValue, page, perPage);
   if (data.hits.length < 1) return showError();
-  createGalleryMarkup(data.hits);
-  initializeLightbox();
+  const markup = createGalleryMarkup(data.hits);
+  gallery.insertAdjacentHTML('beforeend', markup);
+  lightbox.refresh();
   hidden(loader);
   if (page * perPage < data.totalHits) show(loadMore);
   else {

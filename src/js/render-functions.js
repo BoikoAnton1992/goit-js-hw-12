@@ -1,7 +1,5 @@
-const gallery = document.querySelector('.gallery');
-
 export default function createGalleryMarkup(data) {
-  const markup = data
+  return data
     .map(
       ({
         webformatURL,
@@ -39,6 +37,4 @@ export default function createGalleryMarkup(data) {
         `
     )
     .join('');
-
-  gallery.insertAdjacentHTML('beforeend', markup);
 }
